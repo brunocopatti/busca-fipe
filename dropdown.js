@@ -27,6 +27,7 @@ class Dropdown {
 	
 		dropdownButton.addEventListener("click", () => {
 			dropdownContent.classList.toggle("active");
+			dropdownSearch.focus();
 		});
 	
 		document.addEventListener("click", (event) => {

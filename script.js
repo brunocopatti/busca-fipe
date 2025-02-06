@@ -1,88 +1,49 @@
 const vehicleResultElement = document.querySelector("#vehicleResult");
 const vehicleTypeButtons = document.querySelectorAll(".vehicleType-button");
 
+const dropdownBrands = new Dropdown("dropdown-brands");
+const dropdownModels = new Dropdown("dropdown-models");
+const dropdownYears = new Dropdown("dropdown-years");
+
 const apiUrl = "https://fipe.parallelum.com.br/api/v2";
 
-function createDropdownElement(name, id) {
-	const dropdownElement = document.createElement("div");
-	dropdownElement.id = id;
-	dropdownElement.classList.add("dropdown");
+let vehicleType = null;
 
-	const dropdownButton = document.createElement("button");
-	dropdownButton.textContent = name;
-	dropdownButton.classList.add("dropdown-button");
+dropdownBrands.onSelect = (brandId) => {
+	(async () => {
+		const response = await fetch(`${apiUrl}/${vehicleType}/brands/${brandId}/models`);
+		const models = await response.json();
 
-	const dropdownContent = document.createElement("div");
-	dropdownContent.classList.add("dropdown-content");
-
-	const dropdownSearch = document.createElement("input");
-	dropdownSearch.classList.add("dropdown-search");
-	dropdownSearch.type = "search";
-
-	const dropdownItemsElement = document.createElement("ul");
-	dropdownItemsElement.classList.add("dropdown-items");
-
-	dropdownButton.addEventListener("click", () => {
-		dropdownContent.classList.toggle("active");
-	});
-
-	document.addEventListener("click", (event) => {
-		const isClickInside = dropdownElement.contains(event.target);
-
-		if (!isClickInside) {
-			dropdownContent.classList.remove("active");
-		}
-	});
-
-	dropdownSearch.addEventListener("input", (event) => {
-		const input = event.target.value;
-
-		const dropDownItems = dropdownElement.querySelectorAll(".dropdown-item");
-
-		dropDownItems.forEach((item) => {
-			if (item.textContent.toLowerCase().includes(input.toLowerCase())) {
-				item.style.display = "";
-			} else {
-				item.style.display = "none";
-			}
-		});
-	});
-
-	dropdownElement.appendChild(dropdownButton);
-	dropdownContent.appendChild(dropdownSearch);
-	dropdownContent.appendChild(dropdownItemsElement);
-	dropdownElement.appendChild(dropdownContent);
-
-	return dropdownElement;
+		dropdownModels.setItems(models.map((model) => ({
+			label: model.name,
+			value: model.code
+		})));
+	})();
 }
 
-function setDropdownItems(dropdownId, items) {
-	// items should be an array of objects with the properites label and value
-	const dropdownElement = document.getElementById(dropdownId);
-	const dropdownItemsElement = dropdownElement.querySelector(".dropdown-items");
-	dropdownItemsElement.innerHTML = "";
+dropdownModels.onSelect = (modelId) => {
+	const brandId = dropdownBrands.value;
 
-	items.forEach((item) => {
-		const dropdownItem = document.createElement("li");
-		dropdownItem.classList.add("dropdown-item");
-		dropdownItem.tabIndex = 0;
+	(async () => {
+		const response = await fetch(`${apiUrl}/${vehicleType}/brands/${brandId}/models/${modelId}/years`);
+		const models = await response.json();
 
-		dropdownItem.textContent = item.label;
-		dropdownItem.dataset.value = item.value;
-
-		dropdownItemsElement.appendChild(dropdownItem);
-	});
+		dropdownYears.setItems(models.map((model) => ({
+			label: model.name,
+			value: model.code
+		})));
+	})();
 }
 
 vehicleTypeButtons.forEach((button) => {
-	const vehicleType = button.dataset.value;
+	vehicleType = button.dataset.value;
 
 	button.addEventListener("click", async () => {
 		if (!button.classList.contains("active")) {
 			const response = await fetch(`${apiUrl}/${vehicleType}/brands`);
 			const brands = await response.json();
 
-			setDropdownItems("dropdown-brands", brands.map((brand) => ({
+			dropdownBrands.setItems(brands.map((brand) => ({
 				label: brand.name,
 				value: brand.code
 			})));
@@ -96,10 +57,10 @@ vehicleTypeButtons.forEach((button) => {
 });
 
 document.getElementById("dropdown-brands")
-	.replaceWith(createDropdownElement("Selecione a marca", "dropdown-brands"));
+	.replaceWith(dropdownBrands.createElement("Selecione a marca"));
 
 document.getElementById("dropdown-models")
-	.replaceWith(createDropdownElement("Selecione o modelo", "dropdown-models"));
+	.replaceWith(dropdownModels.createElement("Selecione o modelo"));
 
 document.getElementById("dropdown-years")
-	.replaceWith(createDropdownElement("Selecione o ano", "dropdown-years"));
+	.replaceWith(dropdownYears.createElement("Selecione o ano"));

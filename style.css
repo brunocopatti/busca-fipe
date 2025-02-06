@@ -1,4 +1,4 @@
-.vehicleType-button.active {
+.vehicleType-button.active, .dropdown-item.active {
 	font-weight: bold;
 }
 

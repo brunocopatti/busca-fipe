@@ -78,6 +78,11 @@ class Dropdown {
 			dropdownItem.textContent = item.label;
 
 			dropdownItem.addEventListener("click", () => {
+				this.element.querySelectorAll(".dropdown-item").forEach((item) => {
+					item.classList.remove("active");
+				});
+				dropdownItem.classList.add("active");
+
 				// Closure example
 				this.value = item.value;
 				this.onSelect(item.value);

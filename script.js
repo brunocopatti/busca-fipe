@@ -36,9 +36,9 @@ dropdownModels.onSelect = (modelId) => {
 }
 
 vehicleTypeButtons.forEach((button) => {
-	vehicleType = button.dataset.value;
-
 	button.addEventListener("click", async () => {
+		vehicleType = button.dataset.value;
+
 		if (!button.classList.contains("active")) {
 			const response = await fetch(`${apiUrl}/${vehicleType}/brands`);
 			const brands = await response.json();

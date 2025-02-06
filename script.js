@@ -9,5 +9,9 @@ vehicleTypeButtons.forEach((button) => {
 	button.addEventListener("click", async () => {
 		const response = await fetch(`${apiUrl}/${vehicleType}/brands`);
 		console.log(await response.json());
+		vehicleTypeButtons.forEach((button) => {
+			button.classList.remove("active");
+		});
+		button.classList.add("active");
 	});
 });
